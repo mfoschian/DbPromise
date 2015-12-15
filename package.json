@@ -1,0 +1,18 @@
+{
+  "name": "DbPromise",
+  "version": "0.0.1",
+  "description": "Very basic Promise interface for mssql",
+  "main": "DbPromise.js",
+  "dependencies": {
+    "promise": ">=6.0.1",
+    "mssql": ">=1.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mfoschian/DbPromise.git"
+  },
+  "author": "mfx",
+  "license": "MIT",
+  "readmeFilename": "README.md",
+  "devDependencies": {}
+}
