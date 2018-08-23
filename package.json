@@ -1,6 +1,6 @@
 {
   "name": "DbPromise",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Very basic Promise interface for mssql",
   "main": "DbPromise.js",
   "dependencies": {

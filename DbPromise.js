@@ -101,7 +101,7 @@ Database.prototype.runInTransaction = function( work )
 	}
 	,function( err )
 	{
-		return me.rollback( result );
+		return me.rollback( err );
 	});
 };
 
@@ -285,7 +285,13 @@ Database.prototype.buildSqlSelect = function( args )
 		return null;
 	}
 
-	var sql = 'select ' + fields.join(',')
+	var limit = args.limit;
+	if( !isNaN( limit ) )
+		limit = 'top ' + limit + ' ';
+	else
+		limit = '';
+	
+	var sql = 'select ' + limit + fields.join(',')
 			+ ' from ' + table
 			;
 
@@ -435,6 +441,22 @@ function buildInsertStatement( args )
 	return statement;
 }
 
+function buildDeleteStatement( args )
+{
+	if( !args ) return null;
+
+	var table = args.table;
+	var where = args.where;
+
+	if( !table || !where )
+		return null;
+
+	var statement = "DELETE FROM " + table + " WHERE " + where;
+		
+	//console.log( statement );
+	return statement;
+}
+
 Database.prototype.insert = function( statement, default_result ) // MSSQL dependant
 {
 	var me = this;
@@ -472,6 +494,41 @@ Database.prototype.insert = function( statement, default_result ) // MSSQL depen
 				
 			var row = data.row || {};
 			result.newid = row['newid'] || -1;
+		});
+	});
+};
+
+Database.prototype.delete = function( statement )
+{
+	var me = this;
+	return new Promise( function( resolve, reject )
+	{
+		if( typeof(statement) == 'object' )
+		{
+			statement = buildDeleteStatement( statement );
+			if( !statement )
+			{
+				reject( 'Invalid delete statement' );
+				return;
+			}
+		}
+		
+		var sql = statement;	
+		//console.log( sql );
+
+		me.runQuery( sql, function( err, data )
+		{
+			if( err )
+			{
+				reject(err);
+				return;
+			}
+
+			if( data.done )
+			{
+				resolve(true);
+				return;
+			}			
 		});
 	});
 };
@@ -517,10 +574,16 @@ function formatDateTime( dt )
 
 function escapeString( str ) // MSSQL DEPENDANT
 {
-	// Ms SQL Server ...
-	var s = str.replace( /\'/g, "''" );
-	s = s.replace( /\%/g, "%%" );
-	return s;
+	try {
+		// Ms SQL Server ...
+		var s = str.replace( /\'/g, "''" );
+		s = s.replace( /\%/g, "%%" );
+		return s;
+	}
+	catch( err ) {
+		console.log( "E: DbPromise::escapeString( %s ) : %s", str, err );
+		return '{err}';
+	}
 };
 
 function quote(str)
