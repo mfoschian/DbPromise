@@ -14,5 +14,16 @@
   "author": "mfx",
   "license": "MIT",
   "readmeFilename": "README.md",
-  "devDependencies": {}
+  "devDependencies": {},
+  "bugs": {
+    "url": "https://github.com/mfoschian/DbPromise/issues"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "db",
+    "promise",
+    "mssql"
+  ]
 }
