@@ -1,4 +1,3 @@
-var Promise = require('promise');
 var dbEngine = require('mssql'); 
 //var util = require('util');
 
@@ -36,7 +35,7 @@ Database.prototype.connect = function()
 	var me = this;
 	return new Promise( function( resolve, reject )
 	{
-		me.connection = new dbEngine.Connection(me.config);
+		me.connection = new dbEngine.ConnectionPool(me.config);
 		me.connection.on( 'connect', function()
 		{
 			console.log('Connection opened');
