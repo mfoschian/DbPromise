@@ -5,6 +5,7 @@ function Database( config )
 {
 	this.config = config || {};
 	this.connection = null;
+	this.verbosity = this.config.verbosity || 0;
 
 }
 
@@ -16,7 +17,7 @@ Database.prototype.disconnect = function()
 	if( !cnn )
 		return Promise.resolve();
 
-	console.log( 'disconnecting' );
+	if(this.verbosity >= 1 ) console.log( 'disconnecting' );
 	this.connection = null;
 	
 	return new Promise( function( resolve, reject )
@@ -38,16 +39,16 @@ Database.prototype.connect = function()
 		me.connection = new dbEngine.ConnectionPool(me.config);
 		me.connection.on( 'connect', function()
 		{
-			console.log('Connection opened');
+			if(me.verbosity >= 1 ) console.log('Connection opened');
 		});
 		me.connection.on( 'close', function()
 		{
-			console.log('Connection closed');
+			if(me.verbosity >= 1 ) console.log('Connection closed');
 			me.disconnect(); 
 		});
 		me.connection.on( 'error', function(err)
 		{
-			console.log(err);
+			console.error(err);
 		});
 		
 		me.connection.connect( function( err, msg )
@@ -182,7 +183,7 @@ Database.prototype.runQuery = function( query, callback, args )
 			});
 			request.on( 'error', function(err)
 			{
-				console.log( 'Error: ' + err );
+				console.error( 'Error: ' + err );
 				if(callback) callback( err, {} );
 			});
 			
@@ -193,13 +194,13 @@ Database.prototype.runQuery = function( query, callback, args )
 		}
 		catch( err )
 		{
-			console.log( err );
+			console.error( err );
 		}
 	},
 	function(err)
 	{
 		// ... error checks
-		console.log( 'Error: ' + err );
+		console.error( 'Error: ' + err );
 		if(callback) callback( err );
 	});
 };
@@ -279,8 +280,8 @@ Database.prototype.buildSqlSelect = function( args )
 	var table = args.table || args.from;
 	if( !table )
 	{
-		console.log( 'ERR: No table specified in select' );
-		console.log( args );
+		console.error( 'ERR: No table specified in select' );
+		console.error( args );
 		return null;
 	}
 
@@ -418,7 +419,7 @@ function buildInsertStatement( args )
 	}
 	catch(e)
 	{
-		console.log('wrong values argument to buildInsertStatement: not an object');
+		console.error('wrong values argument to buildInsertStatement: not an object');
 		return null;
 	}
 
@@ -580,7 +581,7 @@ function escapeString( str ) // MSSQL DEPENDANT
 		return s;
 	}
 	catch( err ) {
-		console.log( "E: DbPromise::escapeString( %s ) : %s", str, err );
+		console.error( "E: DbPromise::escapeString( %s ) : %s", str, err );
 		return '{err}';
 	}
 };
