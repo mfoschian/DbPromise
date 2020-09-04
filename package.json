@@ -4,8 +4,7 @@
   "description": "Very basic Promise interface for mssql",
   "main": "DbPromise.js",
   "dependencies": {
-    "promise": ">=6.0.1",
-    "mssql": ">=1.1.0"
+    "mssql": "^6.2.1"
   },
   "repository": {
     "type": "git",
